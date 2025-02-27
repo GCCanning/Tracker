@@ -1,0 +1,58 @@
+local filePath = "basalt.lua" -- Default file path
+
+if not fs.exists(filePath) then
+    shell.run("pastebin run ESs1mg7P packed true " .. filePath:match("(.+)%..+$")) -- Properly remove .lua
+end
+
+local basalt = require(filePath:match("(.+)%..+$"))
+
+local w, h = term.getSize()
+
+local programTitleContent = "Task Tracker"
+
+local main = basalt.createFrame()
+local objFrame = main:addFrame():setPosition(1,1):setBackground(colors.lightGray):setSize(w, h)
+
+local function visualButton(btn)
+    btn:onClick(function(self) self:setBackground(colors.black) self:setForeground(colors.lightGray) end)
+    btn:onClickUp(function(self) self:setBackground(colors.gray) self:setForeground(colors.black) end)
+    btn:onLoseFocus(function(self) self:setBackground(colors.gray) self:setForeground(colors.black) end)
+end
+
+local programTitle = objFrame:addLabel():setText(programTitleContent):setFontSize(2):setPosition(9, 2)
+
+local todoLabel = objFrame:addLabel():setText("Todo:"):setPosition(2,6)
+
+local todoTextInput = objFrame:addInput():setSize(objFrame:getWidth() - 12, 3):setPosition(todoLabel:getX() + 5, 5):setBackground(colors.gray)
+
+local blueDividerPane = objFrame:addPane():setSize(objFrame:getWidth() - 2, 1):setPosition(2, todoTextInput:getY() + 3):setBackground(false, "\140", colors.red)
+
+local todosList = objFrame:addList():setPosition(2 , blueDividerPane:getY() + 1):setSize(w - 2, h - 10):setScrollable(true)
+
+local function deleteItem(self, event, char)
+    if char == "d" and self:getItemIndex() then
+        self:removeItem(self:getItemIndex())
+    end
+end
+
+todosList:onChar(deleteItem)
+
+local addTaskButton = objFrame:addButton()
+    :setText("Add")
+    :setHorizontalAlign("center")
+    :setVerticalAlign("center")
+    :setPosition(todoTextInput:getX() + 35, 5)
+    :setSize(5, 3)
+    :setBorder(colors.black)
+    :onClick(function()
+        local inputFieldValue = todoTextInput:getValue()
+        
+        if inputFieldValue and inputFieldValue ~= "" then
+            todosList:addItem(" " .. inputFieldValue)
+            todoTextInput:setValue("")
+        end
+    end)
+
+visualButton(addTaskButton)
+
+basalt.autoUpdate()
