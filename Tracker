@@ -1,7 +1,7 @@
-local filePath = "basalt.lua" -- Default file path
+local filePath = "basalt.lua"
 
 if not fs.exists(filePath) then
-    shell.run("pastebin run ESs1mg7P packed true " .. filePath:match("(.+)%..+$")) -- Properly remove .lua
+    shell.run("pastebin run ESs1mg7P packed true " .. filePath:match("(.+)%..+$"))
 end
 
 local basalt = require(filePath:match("(.+)%..+$"))
@@ -19,13 +19,17 @@ local function visualButton(btn)
     btn:onLoseFocus(function(self) self:setBackground(colors.gray) self:setForeground(colors.black) end)
 end
 
-local programTitle = objFrame:addLabel():setText(programTitleContent):setFontSize(2):setPosition(9, 2)
+-- Fix: Ensure the label is properly created
+local programTitle = objFrame:addLabel()
+if programTitle then
+    programTitle:setText(programTitleContent):setSize(#programTitleContent + 2, 1):setPosition(9, 2)
+end
 
-local todoLabel = objFrame:addLabel():setText("Todo:"):setPosition(2,6)
+local todoLabel = objFrame:addLabel():setText("Todo:"):setSize(5, 1):setPosition(2,6)
 
-local todoTextInput = objFrame:addInput():setSize(objFrame:getWidth() - 12, 3):setPosition(todoLabel:getX() + 5, 5):setBackground(colors.gray)
+local todoTextInput = objFrame:addInput():setSize(w - 12, 3):setPosition(todoLabel:getX() + 5, 5):setBackground(colors.gray)
 
-local blueDividerPane = objFrame:addPane():setSize(objFrame:getWidth() - 2, 1):setPosition(2, todoTextInput:getY() + 3):setBackground(false, "\140", colors.red)
+local blueDividerPane = objFrame:addPane():setSize(w - 2, 1):setPosition(2, todoTextInput:getY() + 3):setBackground(false, "\140", colors.red)
 
 local todosList = objFrame:addList():setPosition(2 , blueDividerPane:getY() + 1):setSize(w - 2, h - 10):setScrollable(true)
 
